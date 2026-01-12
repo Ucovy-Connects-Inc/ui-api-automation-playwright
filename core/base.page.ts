@@ -9,7 +9,7 @@ export class BasePage {
 
   async navigate(url: string) {
     await this.page.goto(url);
-  }
+  } 
 
   async click(locator: Locator) {
     await locator.click();
