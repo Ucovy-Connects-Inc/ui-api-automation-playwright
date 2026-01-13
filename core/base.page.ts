@@ -9,13 +9,15 @@ export class BasePage {
 
   async navigate(url: string) {
     await this.page.goto(url);
-  } 
+  }
 
   async click(locator: Locator) {
+    await locator.waitFor({ state: 'visible' });
     await locator.click();
   }
 
   async fill(locator: Locator, value: string) {
+    await locator.waitFor({ state: 'visible' });
     await locator.fill(value);
   }
 

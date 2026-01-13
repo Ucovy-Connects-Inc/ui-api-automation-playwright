@@ -1,22 +1,19 @@
-import { ApiClient } from '../client/api-client';
+import { APIRequestContext } from '@playwright/test';
 
-export class UsersService extends ApiClient {
+export class UsersService {
+  private request: APIRequestContext;
 
-  async init() {
-    await super.init('https://jsonplaceholder.typicode.com');
+  constructor(request: APIRequestContext) {
+    this.request = request;
   }
 
-  async getUsers() {
-    // GET https://jsonplaceholder.typicode.com/users
-    return await this.get('/users');
+  async getUsers(page: number) {
+    return await this.request.get(`/users?page=${page}`);
   }
 
   async createUser(name: string, job: string) {
-    // POST https://jsonplaceholder.typicode.com/users
-    return await this.post('/users', {
-      name,
-      job,
-      email: 'rajesh@test.com'
+    return await this.request.post('/users', {
+      data: { name, job },
     });
   }
 }
