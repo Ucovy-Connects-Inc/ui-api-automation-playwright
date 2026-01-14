@@ -9,7 +9,11 @@ export class DashboardPage {
     this.dashboardHeader = page.locator('h6:has-text("Dashboard")');
   }
 
-  async verifyDashboardVisible() {
+  async waitForDashboard() {
     await this.dashboardHeader.waitFor({ state: 'visible' });
+  }
+
+  async isDashboardVisible(): Promise<boolean> {
+    return await this.dashboardHeader.isVisible();
   }
 }
