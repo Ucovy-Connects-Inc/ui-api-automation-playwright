@@ -1,40 +1,32 @@
+// core/selfhealing.ts
 import { Page, Locator } from '@playwright/test';
 
-type HealingStrategy = {
-  description: string;
-  build: () => Locator;
-};
+export async function healLocator(page: Page, selector: string): Promise<Locator> {
+  let locator = page.locator(selector);
 
-export class SelfHealing {
-  private page: Page;
-
-  constructor(page: Page) {
-    this.page = page;
+  if (await locator.count() > 0) {
+    return locator;
   }
 
-  async locate(
-    primary: Locator,
-    fallbacks: HealingStrategy[],
-    timeout: number = 3000
-  ): Promise<Locator> {
-    try {
-      await primary.first().waitFor({ state: 'visible', timeout });
-      return primary;
-    } catch {
-      console.warn('⚠ primary locator failed, trying self-healing...');
-    }
+  console.log(`⚠️ Locator failed. Trying self-heal for: ${selector}`);
 
-    for (const strategy of fallbacks) {
-      try {
-        const candidate = strategy.build();
-        await candidate.first().waitFor({ state: 'visible', timeout });
-        console.warn(`✅ healed using: ${strategy.description}`);
-        return candidate;
-      } catch {
-        console.warn(`failed: ${strategy.description}`);
-      }
-    }
+  // Fallback using visible text
+  const textMatch = selector.match(/text\(\"(.+?)\"\)/);
 
-    throw new Error('self-healing failed: no valid locator found');
+  if (textMatch) {
+    const text = textMatch[1];
+    locator = page.getByText(text);
+    if (await locator.count() > 0) return locator;
   }
+
+  // Fallback using role
+  const roleMatch = selector.match(/role=\"(.+?)\"/);
+  if (roleMatch) {
+    const role = roleMatch[1];
+    locator = page.getByRole(role as any);
+    if (await locator.count() > 0) return locator;
+  }
+
+  console.log(`❌ Self-heal failed. Using original selector.`);
+  return page.locator(selector);
 }

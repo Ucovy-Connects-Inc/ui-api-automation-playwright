@@ -1,19 +1,14 @@
-import { Page, Locator } from '@playwright/test';
+import { BasePage } from '../core/base.page';
 
-export class DashboardPage {
-  private page: Page;
-  private dashboardHeader: Locator;
+export class DashboardPage extends BasePage {
 
-  constructor(page: Page) {
-    this.page = page;
-    this.dashboardHeader = page.locator('h6:has-text("Dashboard")');
-  }
+  dashboardMenu = this.page.locator('a.oxd-main-menu-item:has-text("Dashboard")');
 
   async waitForDashboard() {
-    await this.dashboardHeader.waitFor({ state: 'visible' });
+    await this.dashboardMenu.waitFor({ state: 'visible' });
   }
 
-  async isDashboardVisible(): Promise<boolean> {
-    return await this.dashboardHeader.isVisible();
+  async isDashboardVisible() {
+    return await this.dashboardMenu.isVisible();
   }
 }

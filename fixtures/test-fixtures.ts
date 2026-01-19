@@ -1,22 +1,18 @@
 import { test as base } from '@playwright/test';
 import { LoginPage } from '../pages/login.page';
-import { DashboardPage } from '../pages/dashboard.page';
 
-type MyFixtures = {
-  loggedInPage: any;
+type Fixtures = {
+  loggedInPage: LoginPage;
 };
 
-export const test = base.extend<MyFixtures>({
+export const test = base.extend<Fixtures>({
   loggedInPage: async ({ page }, use) => {
     const loginPage = new LoginPage(page);
 
-    await loginPage.navigate('https://opensource-demo.orangehrmlive.com/');
+    await loginPage.navigate('https://opensource-demo.orangehrmlive.com');
     await loginPage.login('Admin', 'admin123');
 
-    const dashboard = new DashboardPage(page);
-    await dashboard.waitForDashboard();
-
-    await use(page);
+    await use(loginPage);
   },
 });
 

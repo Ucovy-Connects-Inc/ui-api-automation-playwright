@@ -1,20 +1,23 @@
 import { APIRequestContext } from '@playwright/test';
 
 export class UsersService {
-  private request: APIRequestContext;
-  private readonly baseUrl = 'https://reqres.in/api';
-
-  constructor(request: APIRequestContext) {
-    this.request = request;
-  }
+  constructor(private request: APIRequestContext) {}
 
   async getUsers(page: number) {
-    return await this.request.get(`${this.baseUrl}/users?page=${page}`);
+    const response = await this.request.get(`https://reqres.in/api/users?page=${page}`);
+
+    console.log('GET USERS STATUS:', response.status());
+    console.log('GET USERS URL:', response.url());
+
+    return response;
   }
 
   async createUser(name: string, job: string) {
-    return await this.request.post(`${this.baseUrl}/users`, {
+    const response = await this.request.post(`https://reqres.in/api/users`, {
       data: { name, job },
     });
+
+    console.log('CREATE USER STATUS:', response.status());
+    return response;
   }
 }

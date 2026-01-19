@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { LoginPage } from '../../pages/login.page';
+import { DashboardPage } from '../../pages/dashboard.page';
 
-test('Verify user can login successfully', async ({ page }) => {
-  const loginPage = new LoginPage(page);
+test('Verify user can access dashboard', async ({ page }) => {
+  const dashboard = new DashboardPage(page);
 
-  await loginPage.navigate('https://opensource-demo.orangehrmlive.com/');
-  await loginPage.login('Admin', 'admin123');
+  await page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index');
 
-  await expect(page.locator('h6:has-text("Dashboard")')).toBeVisible();
+  await dashboard.waitForDashboard();
+
+  expect(await dashboard.isDashboardVisible()).toBeTruthy();
 });

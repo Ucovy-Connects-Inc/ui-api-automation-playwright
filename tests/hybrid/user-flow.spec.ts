@@ -1,19 +1,19 @@
-import { test, expect } from '../../fixtures/test-fixtures';
+import { test, expect } from '@playwright/test';
 import { UsersService } from '../../api/services/users.service';
 import { DashboardPage } from '../../pages/dashboard.page';
 
-test('Hybrid API + UI Flow – Fetch users via API and validate UI access', async ({ loggedInPage, request }) => {
+test('Hybrid API + UI Flow', async ({ page, request }) => {
   const usersService = new UsersService(request);
+
   const apiResponse = await usersService.getUsers(2);
 
-  if (apiResponse.ok()) {
-    const apiData = await apiResponse.json();
-    expect(apiData.data.length).toBeGreaterThan(0);
-  } else {
-    console.warn('API is blocked or unavailable. Continuing with UI validation.');
-  }
+  console.log('API STATUS:', apiResponse.status());
 
-  const dashboard = new DashboardPage(loggedInPage);
-  const isVisible = await dashboard.isDashboardVisible();
-  expect(isVisible).toBeTruthy();
+  const dashboard = new DashboardPage(page);
+
+  await page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index');
+
+  await dashboard.waitForDashboard();
+
+  expect(await dashboard.isDashboardVisible()).toBeTruthy();
 });

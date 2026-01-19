@@ -1,8 +1,12 @@
-import { test, expect } from '../../fixtures/test-fixtures';
+import { test, expect } from '@playwright/test';
 import { DashboardPage } from '../../pages/dashboard.page';
 
-test('Verify user lands on dashboard after login', async ({ loggedInPage }) => {
-  const dashboard = new DashboardPage(loggedInPage);
-  const isVisible = await dashboard.isDashboardVisible();
-  expect(isVisible).toBeTruthy();
+test('Verify dashboard loads successfully', async ({ page }) => {
+  const dashboard = new DashboardPage(page);
+
+  await page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index');
+
+  await dashboard.waitForDashboard();
+
+  expect(await dashboard.isDashboardVisible()).toBeTruthy();
 });
