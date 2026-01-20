@@ -1,21 +1,18 @@
-import { chromium } from '@playwright/test';
+import { chromium, FullConfig } from '@playwright/test';
 
-async function globalLogin() {
+async function globalSetup(config: FullConfig) {
   const browser = await chromium.launch();
-  const context = await browser.newContext();
-  const page = await context.newPage();
+  const page = await browser.newPage();
 
   await page.goto('https://opensource-demo.orangehrmlive.com/');
-
   await page.fill('input[name="username"]', 'Admin');
   await page.fill('input[name="password"]', 'admin123');
   await page.click('button[type="submit"]');
 
   await page.waitForURL('**/dashboard/**');
-
-  await context.storageState({ path: 'storage/auth.json' });
+  await page.context().storageState({ path: 'storageState.json' });
 
   await browser.close();
 }
 
-export default globalLogin;
+export default globalSetup;

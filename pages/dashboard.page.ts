@@ -1,14 +1,34 @@
-import { BasePage } from '../core/base.page';
 
-export class DashboardPage extends BasePage {
+import { Page, expect } from '@playwright/test';
+import { heal } from '../core/selfhealing';
 
-  dashboardMenu = this.page.locator('a.oxd-main-menu-item:has-text("Dashboard")');
+export class DashboardPage {
+  constructor(private page: Page) {}
 
   async waitForDashboard() {
-    await this.dashboardMenu.waitFor({ state: 'visible' });
+    const header = await heal(this.page, {
+      description: 'dashboard header',
+      selectors: [
+        // Primary selector for modern OrangeHRM
+        'span.oxd-topbar-header-breadcrumb-level',
+
+        // Additional fallbacks
+        'h6.oxd-text.oxd-text--h6.oxd-topbar-header-breadcrumb-module',
+        'h6:has-text("Dashboard")',
+        'text=Dashboard',
+
+        // XPath fallbacks
+        '//span[contains(text(), "Dashboard")]',
+        '//h6[contains(text(), "Dashboard")]'
+      ]
+    });
+
+    await expect(header).toBeVisible({ timeout: 15000 });
   }
 
   async isDashboardVisible() {
-    return await this.dashboardMenu.isVisible();
+    return this.page
+      .locator('span.oxd-topbar-header-breadcrumb-level')
+      .isVisible();
   }
 }

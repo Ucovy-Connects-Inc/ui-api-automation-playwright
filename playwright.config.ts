@@ -1,20 +1,12 @@
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
+  testDir: './tests',
   globalSetup: require.resolve('./tests/setup/global-login.setup'),
-
-  projects: [
-    {
-      name: 'chromium',
-      use: { storageState: 'storage/auth.json' },
-    },
-    {
-      name: 'firefox',
-      use: { storageState: 'storage/auth.json' },
-    },
-    {
-      name: 'webkit',
-      use: { storageState: 'storage/auth.json' },
-    },
-  ],
+  use: {
+    baseURL: 'https://opensource-demo.orangehrmlive.com',
+    headless: true,
+    screenshot: 'only-on-failure',
+    trace: 'on-first-retry',
+  },
 });

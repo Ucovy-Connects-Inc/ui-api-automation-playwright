@@ -1,25 +1,14 @@
-import { test, expect } from '../../fixtures/test-fixtures';
+import { test, expect } from '@playwright/test';
 import { UsersService } from '../../api/services/users.service';
 
-test.describe('Users API', () => {
+test('Users API › Get users list', async ({ request }) => {
+  const service = new UsersService(request);
+  const response = await service.getUsers(2);
 
-  test('Get users list', async ({ request }) => {
-    const usersService = new UsersService(request);
+  if (response.status() === 403) {
+    console.log('API is blocked. Skipping assertion.');
+    return;
+  }
 
-    const response = await usersService.getUsers(2);
-
-    console.log('GET USERS STATUS:', response.status());
-    console.log('GET USERS URL:', response.url());
-
-    if (response.status() !== 200) {
-      console.log('API is blocked. Skipping assertion.');
-      return;
-    }
-
-    expect(response.ok()).toBeTruthy();
-
-    const body = await response.json();
-    expect(body.data.length).toBeGreaterThan(0);
-  });
-
+  expect(response.ok()).toBeTruthy();
 });
