@@ -5,7 +5,7 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
-     workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   playwright-tests:
@@ -42,7 +42,7 @@ jobs:
 
       # -----------------------------
       # 5️⃣ Run Playwright tests (NO Jira)
-      #    Runs on PRs & branches safely
+      #    PR-safe: no Jira spam
       # -----------------------------
       - name: Run Playwright tests (no Jira)
         if: github.event_name == 'pull_request'
@@ -52,14 +52,13 @@ jobs:
 
       # -----------------------------
       # 6️⃣ Run Playwright tests (WITH Jira)
-      #    Only on push to branches
+      #    Only on push / manual runs
       # -----------------------------
       - name: Run Playwright tests (with Jira)
         if: github.event_name != 'pull_request'
         env:
           ENABLE_JIRA: "true"
 
-          # Jira secrets (must exist in GitHub)
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
