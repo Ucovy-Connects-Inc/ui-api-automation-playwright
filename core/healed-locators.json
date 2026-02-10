@@ -1,0 +1,8 @@
+{
+  "username input": "input.oxd-input.oxd-input--focus",
+  "dashboard header": "a.oxd-brand",
+  "password input": "input[name=\"password\"]",
+  "login button": "button[type=\"submit\"]",
+  "adfdsafas": "input[name=\"password\"]",
+  "abcd": "input.oxd-input.oxd-input--focus"
+}

@@ -1,15 +1,23 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../core/base.page';
 import { LoginPage } from '../../pages/login.page';
+import { DashboardPage } from '../../pages/dashboard.page';
 
-test('Verify user can login successfully', async ({ page }) => {
-  const loginPage = new LoginPage(page);
+test('Login UI works (self-healing enabled)', async ({ page }) => {
+  const login = new LoginPage(page);
 
-  await loginPage.navigate('https://opensource-demo.orangehrmlive.com/');
+  // 1️⃣ Go to login page
+  await login.goto();
 
-  // ✅ Wait instead of boolean check
-  await loginPage.waitForLoginPage();
+  // 2️⃣ Perform login (THIS triggers self-healing)
+  await login.login('Admin', 'admin123');
 
-  await loginPage.login('Admin', 'admin123');
+  // 3️⃣ Verify dashboard loaded (post-login proof)
+  const dashboard = new DashboardPage(page);
+  await dashboard.waitForDashboard();
 
-  await expect(page.locator('h6:has-text("Dashboard")')).toBeVisible();
+  // 4️⃣ Final assertion (URL check)
+await page.waitForLoadState('networkidle');
+await expect(page).toHaveURL(/wrong/);//wrong assertion for testing JIRA integration
+//await expect(page).toHaveURL(/dashboard/);//correct code
+
 });

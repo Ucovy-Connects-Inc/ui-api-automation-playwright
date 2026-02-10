@@ -1,15 +1,18 @@
-import { Page, Locator } from '@playwright/test';
-import { BasePage } from '../core/base.page';
+import { Page, expect } from '@playwright/test';
 
-export class DashboardPage extends BasePage {
-  private dashboardHeader: Locator;
+export class DashboardPage {
+  constructor(private page: Page) {}
 
-  constructor(page: Page) {
-    super(page);
-    this.dashboardHeader = page.locator('h6:has-text("Dashboard")');
+  async waitForDashboard() {
+    // 1️⃣ Strongest assertion → URL
+    await expect(this.page).toHaveURL(/dashboard/);
+
+    // 2️⃣ Ensure SPA layout is mounted
+    await this.page.locator('#app').waitFor({ state: 'visible' });
   }
 
+  // Optional utility (NOT used in test assertion)
   async isDashboardVisible(): Promise<boolean> {
-    return await this.isVisible(this.dashboardHeader);
+    return this.page.url().includes('/dashboard');
   }
 }

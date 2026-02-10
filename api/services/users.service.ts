@@ -1,22 +1,17 @@
-import { ApiClient } from '../client/api-client';
+import { API_BASE_URL } from '../../config/api.config';
+import { APIRequestContext } from '@playwright/test';
 
-export class UsersService extends ApiClient {
+export class UsersService {
+  constructor(private request: APIRequestContext) {}
 
-  async init() {
-    await super.init('https://jsonplaceholder.typicode.com');
-  }
+  async getUsers(page: number) {
+    const response = await this.request.get(
+      `${API_BASE_URL}/users`
+    );
 
-  async getUsers() {
-    // GET https://jsonplaceholder.typicode.com/users
-    return await this.get('/users');
-  }
+    console.log('GET USERS STATUS:', response.status());
+    console.log('GET USERS URL:', response.url());
 
-  async createUser(name: string, job: string) {
-    // POST https://jsonplaceholder.typicode.com/users
-    return await this.post('/users', {
-      name,
-      job,
-      email: 'rajesh@test.com'
-    });
+    return response;
   }
 }
