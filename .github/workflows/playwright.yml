@@ -45,7 +45,7 @@ jobs:
           JIRA_ISSUE_TYPE: ${{ secrets.JIRA_ISSUE_TYPE }}
 
         run: |
-          npx playwright testS
+          npx playwright test
 
       # 6️⃣ Upload Playwright report (always)
       - name: Upload Playwright Report
