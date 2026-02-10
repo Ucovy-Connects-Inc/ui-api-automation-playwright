@@ -1,27 +1,56 @@
-name: Playwright Tests
+name: Playwright UI Tests (CI)
+
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, develop ]
+
 jobs:
-  test:
-    timeout-minutes: 60
+  playwright-tests:
     runs-on: ubuntu-latest
+
+    timeout-minutes: 30
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      # 1️⃣ Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 4️⃣ Install Playwright browsers
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      # 5️⃣ Run Playwright tests (with Jira enabled)
+      - name: Run Playwright tests
+        env:
+          ENABLE_JIRA: "true"
+
+          # Jira credentials (from GitHub Secrets)
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
+          JIRA_ISSUE_TYPE: ${{ secrets.JIRA_ISSUE_TYPE }}
+
+        run: |
+          npx playwright testS
+
+      # 6️⃣ Upload Playwright report (always)
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
