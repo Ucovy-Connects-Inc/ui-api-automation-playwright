@@ -1,4 +1,4 @@
-name: Playwright UI Tests (CI)
+name: Playwright UI Tests
 
 on:
   push:
@@ -9,45 +9,67 @@ on:
 jobs:
   playwright-tests:
     runs-on: ubuntu-latest
-
     timeout-minutes: 30
 
     steps:
+      # -----------------------------
       # 1️⃣ Checkout code
+      # -----------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # -----------------------------
       # 2️⃣ Setup Node.js
+      # -----------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          cache: npm
 
+      # -----------------------------
       # 3️⃣ Install dependencies
+      # -----------------------------
       - name: Install dependencies
         run: npm ci
 
+      # -----------------------------
       # 4️⃣ Install Playwright browsers
+      # -----------------------------
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      # 5️⃣ Run Playwright tests (with Jira enabled)
-      - name: Run Playwright tests
+      # -----------------------------
+      # 5️⃣ Run Playwright tests (NO Jira)
+      #    Runs on PRs & branches safely
+      # -----------------------------
+      - name: Run Playwright tests (no Jira)
+        if: github.event_name == 'pull_request'
+        env:
+          ENABLE_JIRA: "false"
+        run: npx playwright test
+
+      # -----------------------------
+      # 6️⃣ Run Playwright tests (WITH Jira)
+      #    Only on push to branches
+      # -----------------------------
+      - name: Run Playwright tests (with Jira)
+        if: github.event_name != 'pull_request'
         env:
           ENABLE_JIRA: "true"
 
-          # Jira credentials (from GitHub Secrets)
+          # Jira secrets (must exist in GitHub)
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
           JIRA_ISSUE_TYPE: ${{ secrets.JIRA_ISSUE_TYPE }}
 
-        run: |
-          npx playwright test
+        run: npx playwright test
 
-      # 6️⃣ Upload Playwright report (always)
+      # -----------------------------
+      # 7️⃣ Upload Playwright report
+      # -----------------------------
       - name: Upload Playwright Report
         if: always()
         uses: actions/upload-artifact@v4
