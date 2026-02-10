@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../config/api.config';
 import { APIRequestContext } from '@playwright/test';
 
 export class UsersService {
@@ -5,7 +6,7 @@ export class UsersService {
 
   async getUsers(page: number) {
     const response = await this.request.get(
-      `https://reqres.in/api/users?page=${page}`
+      `${API_BASE_URL}/users`
     );
 
     console.log('GET USERS STATUS:', response.status());

@@ -10,6 +10,8 @@ async function globalSetup(config: FullConfig) {
   await page.click('button[type="submit"]');
 
   await page.waitForURL('**/dashboard/**');
+  
+  // ⬇️ THIS CREATES storageState.json
   await page.context().storageState({ path: 'storageState.json' });
 
   await browser.close();

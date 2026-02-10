@@ -1,5 +1,6 @@
 import { Page } from '@playwright/test';
 import { heal } from '../core/selfhealing';
+import { time } from 'node:console';
 
 export class LoginPage {
   constructor(private page: Page) {}
@@ -12,14 +13,14 @@ export class LoginPage {
     // username field (self-healing)
     const usernameInput = await heal(this.page, {
       description: 'username input',
-      selectors: [
-        'input[name="username"]',
-        'input[placeholder="Username"]',
-        'input.oxd-input'
-      ]
+      selectors:  [
+    'input#wrong-id',
+    'input.non-existent-classs',
+    'div.fake-usernames'
+  ]
     });
     await usernameInput.fill(username);
-
+    //await this.page.waitForSelector('input[name="userna"]', { timeout: 1000 }); intentional selector error to trigger self-healing
     // password field (self-healing)
     const passwordInput = await heal(this.page, {
       description: 'password input',
@@ -30,6 +31,7 @@ export class LoginPage {
       ]
     });
     await passwordInput.fill(password);
+    // await this.page.waitForSelector('input[name="passw"]', { timeout: 1000 });(intentional selector error to trigger self-healing)
 
     // login button (self-healing)
     const loginButton = await heal(this.page, {
